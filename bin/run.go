@@ -15,4 +15,9 @@ func main() {
         fmt.Println("Missing input or output")
         return
     }
+
+    if params.Method == "est" {
+        estimator := lda.NewEstimator(params)
+        estimator.Train()
+    }
 }
