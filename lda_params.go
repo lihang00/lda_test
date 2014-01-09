@@ -17,7 +17,7 @@ type LDAParams struct{
 
 func PrepareParams() *LDAParams {
     params := LDAParams{}
-    input_path := flag.String("input", "", "Input path, seprated by comma")
+    input_path := flag.String("input", "", "Input path")
     output_path := flag.String("output", "", "Output path")
     alpha := flag.Float64("alpha", 0.1, "alpha")
     beta := flag.Float64("beta", 0.1, "beta")
