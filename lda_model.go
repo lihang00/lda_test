@@ -34,3 +34,32 @@ func (m *LDAModel) IncreaseNWZ(word int64, topic int64) {
 
     m.nwz[word].AddValue(topic, int64(1))
 }
+
+func (m *LDAModel) DecreaseNWZ(word int64, topic int64) {
+    for int64(len(m.nwz)) <= word {
+        m.nwz = append(m.nwz, NewIntVector())
+    }
+
+    m.nwz[word].AddValue(topic, int64(-1))
+}
+
+func (m *LDAModel) IncreaseNZ(topic int64) {
+    m.nz[topic] += 1
+}
+
+func (m *LDAModel) DecreaseNZ(topic int64) {
+    m.nz[topic] -= 1
+}
+
+func (m *LDAModel) GetNWZElement(word int64, topic int64) int64{
+    return m.nwz[word].GetValue(topic)
+}
+
+func (m *LDAModel) GetNZElement(topic int64) int64{
+    return m.nz[topic]
+}
+
+func (m *LDAModel) GetWordCount() int64 {
+    return int64(len(m.nwz))
+}
+
