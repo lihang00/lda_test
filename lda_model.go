@@ -1,7 +1,11 @@
 package lda
 
 import (
-    //"math/rand"
+    "strconv"
+    "os"
+    "bufio"
+    "strings"
+    "hector/util"
 )
 
 type LDAModel struct {
@@ -63,3 +67,43 @@ func (m *LDAModel) GetWordCount() int64 {
     return int64(len(m.nwz))
 }
 
+func (m *LDAModel) SaveModel(path string) string{
+    sb := util.StringBuilder{}
+    for n := int64(0); n < int64(len(m.nwz)) ; n++ {
+        for k, cnt := range m.nwz[n].data {
+            sb.Write(m.word_dic.GetWord(n))
+            sb.Write("\t")
+            sb.Int64(k)
+            sb.Write("\t")
+            sb.Int64(cnt)
+            sb.Write("\n")
+        }
+    }
+    sb.WriteToFile(path)
+
+    return sb.String()
+}
+
+func (m *LDAModel) LoadModel(path string) {
+    file, _ := os.Open(path)
+    defer file.Close()
+
+    scaner := bufio.NewScanner(file)
+    for scaner.Scan() {
+        line := scaner.Text()
+        tks := strings.Split(line, "\t")
+        if len(tks) != 3 {
+            continue
+        }
+        word := m.word_dic.GetId(tks[0])
+        topic, _ := strconv.ParseInt(tks[1], 10, 64)
+        freq, _ := strconv.ParseInt(tks[2], 10, 64)
+
+        for int64(len(m.nwz)) <= word {
+            m.nwz = append(m.nwz, NewIntVector())
+        }  
+
+        m.nwz[word].AddValue(topic, int64(1))   
+        m.nz[topic] = freq
+    }
+}
