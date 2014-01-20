@@ -112,10 +112,11 @@ func (e *Estimator) Train() {
     // calcPerplexity
 
     // save model
+    e.Model.SaveModel(e.Param.Output)
 }
 
-func (e *Estimator) CalSamplePr(word int64, ndm *IntVector, ndsumm int64) *Prod{
-    pr := NewProd()
+func (e *Estimator) CalSamplePr(word int64, ndm *IntVector, ndsumm int64) *Prob{
+    pr := NewProb()
     Vbeta := e.Model.beta * float64(e.Model.GetWordCount())
     Kalpha := e.Model.alpha * float64(e.Model.ntopics)
     for k := int64(0); k < e.Model.ntopics ; k++ {
