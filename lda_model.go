@@ -31,28 +31,32 @@ func InitModel(param *LDAParams) *LDAModel {
     return &m
 }
 
-func (m *LDAModel) IncreaseNWZ(word int64, topic int64) {
+func (m *LDAModel) AddNWZ(word int64, topic int64, freq int64) {
     for int64(len(m.nwz)) <= word {
         m.nwz = append(m.nwz, NewIntVector())
     }
 
-    m.nwz[word].AddValue(topic, int64(1))
+    m.nwz[word].AddValue(topic, freq)
+}
+
+func (m *LDAModel) IncreaseNWZ(word int64, topic int64) {
+    m.AddNWZ(word, topic, int64(1))
 }
 
 func (m *LDAModel) DecreaseNWZ(word int64, topic int64) {
-    for int64(len(m.nwz)) <= word {
-        m.nwz = append(m.nwz, NewIntVector())
-    }
+    m.AddNWZ(word, topic, int64(-1))
+}
 
-    m.nwz[word].AddValue(topic, int64(-1))
+func (m *LDAModel) AddNZ(topic int64, cnt int64) {
+    m.nz[topic] += cnt
 }
 
 func (m *LDAModel) IncreaseNZ(topic int64) {
-    m.nz[topic] += 1
+    m.AddNZ(topic, int64(1))
 }
 
 func (m *LDAModel) DecreaseNZ(topic int64) {
-    m.nz[topic] -= 1
+    m.AddNZ(topic, int64(-1))
 }
 
 func (m *LDAModel) GetNWZElement(word int64, topic int64) int64{
@@ -79,7 +83,10 @@ func (m *LDAModel) SaveModel(path string) string{
             sb.Write("\n")
         }
     }
-    sb.WriteToFile(path)
+
+    if path != "" {
+        sb.WriteToFile(path)
+    }
 
     return sb.String()
 }
@@ -91,19 +98,23 @@ func (m *LDAModel) LoadModel(path string) {
     scaner := bufio.NewScanner(file)
     for scaner.Scan() {
         line := scaner.Text()
-        tks := strings.Split(line, "\t")
-        if len(tks) != 3 {
-            continue
-        }
-        word := m.word_dic.GetId(tks[0])
-        topic, _ := strconv.ParseInt(tks[1], 10, 64)
-        freq, _ := strconv.ParseInt(tks[2], 10, 64)
-
-        for int64(len(m.nwz)) <= word {
-            m.nwz = append(m.nwz, NewIntVector())
-        }  
-
-        m.nwz[word].AddValue(topic, int64(1))   
-        m.nz[topic] = freq
+        m.LoadModelLine(line)
     }
+}
+
+func (m *LDAModel) LoadModelLine(line string) {
+    tks := strings.Split(line, "\t")
+    if len(tks) != 3 {
+        return
+    }
+    word := m.word_dic.AddWord(tks[0])
+    topic, _ := strconv.ParseInt(tks[1], 10, 64)
+    freq, _ := strconv.ParseInt(tks[2], 10, 64)
+
+    for int64(len(m.nwz)) <= word {
+        m.nwz = append(m.nwz, NewIntVector())
+    }  
+
+    m.nwz[word].AddValue(topic, freq)   
+    m.nz[topic] += freq
 }
