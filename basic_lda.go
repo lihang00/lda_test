@@ -8,22 +8,26 @@ import(
     "math/rand"
 )
 
-type Estimator struct {
+type BasicLDA struct {
     Model *LDAModel
     Param *LDAParams
     Data []*Document
 }
 
-func NewEstimator(param *LDAParams) *Estimator {
-    e := Estimator{}
+func NewBasicLDA(param *LDAParams) *BasicLDA {
+    e := BasicLDA{}
     e.Param = param
-    e.Model = InitModel(param)
+    if e.Param.Method != "inference" {
+        e.Model = InitModel(e.Param)
+    }else if e.Param.Method == "inference" {
+        e.Model.LoadModel(e.Param.ModelPath)
+    }
     e.Data = []*Document{}
     e.LoadData(e.Param.Input)
     return &e
 }
 
-func (e *Estimator) LoadData(fileName string) error {
+func (e *BasicLDA) LoadData(fileName string) error {
     file, err := os.Open(fileName)
     if err != nil {
         return err
@@ -43,7 +47,7 @@ func (e *Estimator) LoadData(fileName string) error {
     return nil
 }
 
-func (e *Estimator) Train() {
+func (e *BasicLDA) Train() {
     // init model
     z := []*IntVector{} // topic assignments for words, size M(number of docs) x doc.size() (word count in a doc)
     nd := []*IntVector{} //nd[i][j]: number of words in document i assigned to topic j, size M x K
@@ -115,7 +119,7 @@ func (e *Estimator) Train() {
     e.Model.SaveModel(e.Param.Output)
 }
 
-func (e *Estimator) CalSamplePr(word int64, ndm *IntVector, ndsumm int64) *Prob{
+func (e *BasicLDA) CalSamplePr(word int64, ndm *IntVector, ndsumm int64) *Prob{
     pr := NewProb()
     Vbeta := e.Model.beta * float64(e.Model.GetWordCount())
     Kalpha := e.Model.alpha * float64(e.Model.ntopics)
