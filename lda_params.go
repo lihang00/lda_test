@@ -13,6 +13,7 @@ type LDAParams struct{
     Ntopics int64
     Niters int64
     Method string
+    ModelPath string
 }
 
 func PrepareParams() *LDAParams {
@@ -24,6 +25,7 @@ func PrepareParams() *LDAParams {
     ntopics := flag.Int64("ntopics", 100, "Number of topics")
     niters := flag.Int64("niters", 20, "the number of iterations")
     method := flag.String("method", "", "mathod")
+    modelPath := flag.String("modelPath", "", "Path of ")
 
     flag.Parse()
     fmt.Println("Input path : ", *input_path)
@@ -36,5 +38,6 @@ func PrepareParams() *LDAParams {
     params.Ntopics = *ntopics
     params.Niters = *niters
     params.Method = *method
+    params.ModelPath = *modelPath
     return &params
 }
