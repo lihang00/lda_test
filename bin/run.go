@@ -17,7 +17,11 @@ func main() {
     }
 
     if params.Method == "est" {
-        estimator := lda.NewEstimator(params)
-        estimator.Train()
+        BasicLDA := lda.NewBasicLDA(params)
+        BasicLDA.Train()
+    }
+    else if params.Method == "inference" {
+        BasicLDA := lda.NewBasicLDA(params)
+        BasicLDA.Inference()
     }
 }
