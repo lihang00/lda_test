@@ -27,4 +27,20 @@ func TestDocument(t *testing.T) {
         t.Error("Word in doc mapping error")
     }
 
+    line3 := "fox gun the"
+    doc3 := NewEmptyDoc()
+    doc3.ReadLine(line3, dic)
+
+    if len(doc3.Words) != 2 {
+        t.Error("Word count of readline error")
+    }
+
+    if doc3.Words[0] != 3 || doc3.Words[1] != 0 {
+        fmt.Println(dic.GetId("fox"))
+        fmt.Println(dic.GetId("the"))
+        fmt.Println(doc3.Words[0])
+        fmt.Println(doc3.Words[1])
+        t.Error("Word in doc mapping error after read")   
+    }
+
 }
