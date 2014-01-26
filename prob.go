@@ -49,3 +49,18 @@ func (pr *Prob) Sample() int64 {
 
     return ff
 }
+
+func (pr *Prob) GetMaxPrIndex() int64 {
+    ff := int64(0)
+    maxPr := float64(0)
+
+    for _, idx := range pr.Keys {
+        value := pr.Vector.GetValue(idx)
+        if  value > maxPr {
+            ff = idx
+            maxPr = value
+        }
+    }
+
+    return ff
+}

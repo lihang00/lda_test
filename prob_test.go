@@ -33,4 +33,8 @@ func TestProb(t *testing.T) {
         }
     }
 
+    if pr.GetMaxPrIndex() != 3 {
+        t.Error("Get max pr error.")
+    }
+
 }
